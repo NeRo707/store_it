@@ -17,6 +17,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { createAccount } from "@/lib/actions/user.actions";
+import OTPModal from "./OTPModal";
 
 type TFormType = "sign-in" | "sign-up";
 
@@ -51,7 +52,6 @@ const AuthForm = ({ type }: { type: TFormType }) => {
     setIsLoading(true);
     setErrorMessage("");
 
-    
     try {
       const user = await createAccount({
         fullName: values.fullName || "",
@@ -149,6 +149,9 @@ const AuthForm = ({ type }: { type: TFormType }) => {
         </form>
       </Form>
       {/* OTP Verification */}
+      {accountId && (
+        <OTPModal email={form.getValues("email")} accountId={accountId} />
+      )}
     </>
   );
 };
