@@ -16,7 +16,7 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { verifySecret } from "@/lib/actions/user.actions";
+import { sendEmailOTP, verifySecret } from "@/lib/actions/user.actions";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -52,7 +52,7 @@ const OTPModal = ({
   };
 
   const handleResendOTP = async () => {
-    // call api to resend OTP
+    await sendEmailOTP({ email });
   };
 
   console.log("OTPModal props:", { email, accountId });
