@@ -6,6 +6,8 @@ import { Button } from "./ui/button";
 import { cn, convertFileToUrl, getFileType } from "@/lib/utils";
 import Image from "next/image";
 import Thumbnail from "./Thumbnail";
+import { MAX_FILE_SIZE } from "@/constants";
+import { toast } from "sonner";
 
 interface Props {
   ownerId: string;
@@ -15,21 +17,38 @@ interface Props {
 
 const FileUploader = ({ ownerId, accountId, className }: Props) => {
   const [files, setFiles] = useState<File[]>([]);
-  const onDrop = useCallback( async (acceptedFiles: File[]) => {
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
     // Do something with the files
-    
     setFiles(acceptedFiles);
+
+    const uploadPromises = acceptedFiles.map(async (file) => {
+      if (file.size > MAX_FILE_SIZE) {
+        setFiles((prevFiles) => prevFiles.filter((f) => f.name !== file.name));
+
+        return toast(
+          <p className="body-2 text-white">
+            <span className="font-semibold">{file.name}</span> is too large. Max
+            file size is 50MB.
+          </p>,
+          {
+            className: "error-toast",
+          }
+        );
+      }
+    });
   }, []);
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
-  const handleRemoveFile = (e: React.MouseEvent<HTMLImageElement, MouseEvent>, fileName: string) => {
+  const handleRemoveFile = (
+    e: React.MouseEvent<HTMLImageElement, MouseEvent>,
+    fileName: string
+  ) => {
     e.stopPropagation();
     setFiles((prevFiles) => prevFiles.filter((file) => file.name !== fileName));
+  };
 
-   };
-  
-  console.log("FileUploader.tsx ",{ ownerId, accountId });
-  
+  console.log("FileUploader.tsx ", { ownerId, accountId });
+
   return (
     <div {...getRootProps()} className="cursor-pointer">
       <input {...getInputProps()} />
@@ -50,10 +69,7 @@ const FileUploader = ({ ownerId, accountId, className }: Props) => {
             const { type, extension } = getFileType(file.name);
 
             return (
-              <li
-                key={`${file.name}-${idx}`}
-                className="uploader-preview-item"
-              >
+              <li key={`${file.name}-${idx}`} className="uploader-preview-item">
                 <div className="flex items-center gap-3">
                   <Thumbnail
                     type={type}
@@ -68,7 +84,7 @@ const FileUploader = ({ ownerId, accountId, className }: Props) => {
                       alt="Loading"
                       width={80}
                       height={26}
-                      />
+                    />
                   </div>
                 </div>
 
