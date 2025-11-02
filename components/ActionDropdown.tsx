@@ -24,8 +24,9 @@ import { constructDownloadUrl } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
-import FileDetails from "./FileDetails";
-import ShareInput from "./ShareInput";
+// import { set } from "zod";
+import { deleteFile, renameFile, updateFileUsers } from "@/lib/actions/file.actions";
+import { FileDetails, ShareInput } from "./ActionsModalContent";
 
 const ActionDropdown = ({ file }: { file: Models.Document }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -33,7 +34,7 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [action, setAction] = useState<ActionType | null>(null);
-  
+
   const [name, setName] = useState(file.name);
   const [emails, setEmails] = useState<string[]>([]);
 
@@ -48,12 +49,35 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
   };
 
   const handleAction = async () => {
-   
+    if (!action) return;
+
+    setIsLoading(true);
+    let success = false;
+
+    const actions = {
+      rename: () =>
+        renameFile({ fileId: file.$id, name, extension: file.extension, path }),
+      share: () => updateFileUsers({ fileId: file.$id, emails, path }),
+      delete: () => deleteFile({ fileId: file.$id, bucketFileId: file.bucketFileId, path }),
+    };
+
+    success = await actions[action.value as keyof typeof actions]();
+
+    if (success) closeAllModals();
+
+    setIsLoading(false);
+
   };
 
   const handleRemoveUser = async (email: string) => {
-   
     console.log("Remove user:", email);
+    const updatedEmails = emails.filter((e) => e !== email);
+
+    const success = await updateFileUsers({ fileId: file.$id, emails: updatedEmails, path });
+
+    if (success) setEmails(updatedEmails);
+
+    closeAllModals();
   };
 
   const renderDialogContent = () => {
@@ -137,7 +161,7 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
 
                 if (
                   ["rename", "share", "delete", "details"].includes(
-                    actionItem.value,
+                    actionItem.value
                   )
                 ) {
                   setIsModalOpen(true);
