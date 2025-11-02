@@ -1,9 +1,12 @@
 import Header from '@/components/Header'
 import MobileNavigation from '@/components/MobileNavigation'
 import Sidebar from '@/components/Sidebar'
+import { Toaster } from "@/components/ui/sonner"
 import { getCurrentUser } from '@/lib/actions/user.actions'
 import { redirect } from 'next/navigation'
 import React from 'react'
+
+export const dynamic = "force-dynamic";
 
 const Layout = async ({children}: {children: React.ReactNode}) => {
   const currentUser = await getCurrentUser();
@@ -22,6 +25,7 @@ const Layout = async ({children}: {children: React.ReactNode}) => {
           {children}
         </div>
       </section>
+        <Toaster />
     </main>
   )
 }
