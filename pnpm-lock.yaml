@@ -81,7 +81,7 @@ importers:
         specifier: ^7.53.1
         version: 7.65.0(react@19.0.0-rc-02c0e824-20241028)
       recharts:
-        specifier: ^2.13.3
+        specifier: 2.15.4
         version: 2.15.4(react-dom@19.0.0-rc-02c0e824-20241028(react@19.0.0-rc-02c0e824-20241028))(react@19.0.0-rc-02c0e824-20241028)
       sonner:
         specifier: ^2.0.7
