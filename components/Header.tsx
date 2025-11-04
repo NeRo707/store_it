@@ -13,10 +13,10 @@ const Header = ({ userId, accountId }: { userId: string; accountId: string }) =>
         <FileUploader ownerId={userId} accountId={accountId} />
         <form action={async () => {
           'use server';
-
+          console.log('Signing out user...');
           await signOutUser();
         }}>
-          <Button type="button" className="sign-out-button">
+          <Button type="submit" className="sign-out-button">
             <Image
               src="/assets/icons/logout.svg"
               alt="Sign Out logo"
